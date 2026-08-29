@@ -8,8 +8,9 @@ RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt
 # Copy all source files
 COPY . .
 
-# Install dependencies (dist is already built and included)
+# Install dependencies and build client frontend
 RUN npm install
+RUN if [ -d "client" ]; then cd client && npm install && npm run build; fi
 
 ENV PORT=3000
 ENV NODE_ENV=production
