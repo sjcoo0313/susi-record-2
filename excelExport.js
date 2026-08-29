@@ -205,9 +205,26 @@ async function generateUniversityExcel(studentsWithApps) {
   studentsWithApps.forEach(student => {
     student.applications.forEach(app => {
       const submitText = app.is_submitted ? '접수완료' : (app.university ? '미접수' : '');
+      
       let statusText = app.status || '';
       if (app.status === '예비번호' && app.reserve_number) {
         statusText = `예비 ${app.reserve_number}번`;
+      }
+
+      let minGpaDetail = '최저 없음';
+      if (app.has_min_gpa) {
+        minGpaDetail = `${app.min_gpa_subjects || ''} ${app.min_gpa_grade || ''}`.trim() || '최저 있음';
+      }
+
+      let interviewDetailText = '면접 없음';
+      if (app.has_interview) {
+        if (app.interview_start_date && app.interview_end_date && app.interview_start_date !== app.interview_end_date) {
+          interviewDetailText = `${app.interview_start_date} ~ ${app.interview_end_date}`;
+        } else if (app.interview_start_date) {
+          interviewDetailText = app.interview_start_date;
+        } else {
+          interviewDetailText = '면접 있음';
+        }
       }
 
       const row = detailSheet.addRow([
@@ -221,9 +238,9 @@ async function generateUniversityExcel(studentsWithApps) {
         app.gpa !== null && app.gpa !== undefined ? app.gpa : '',
         app.tendency || '',
         submitText,
-        minGpaText,
+        minGpaDetail,
         app.min_gpa_inquiry || (app.has_min_gpa ? '미지정' : '-'),
-        interviewText,
+        interviewDetailText,
         app.interview_start_date || '',
         app.interview_end_date || '',
         app.interview_detail || '',

@@ -100,7 +100,7 @@ app.post('/api/student/auth', (req, res) => {
   }
 });
 
-// Save / Update 6 Application Cards
+// Save / Update Application Cards (allows partial cards)
 app.post('/api/student/save', (req, res) => {
   try {
     const { student_id, name, pin, applications } = req.body;
@@ -284,7 +284,7 @@ app.post('/api/teacher/reset-pin', (req, res) => {
 app.get('/api/teacher/export-excel', async (req, res) => {
   try {
     const studentsWithApps = getAllStudentsWithApps();
-    const workbook = await generateUniversityExcel(studentsWithApps);
+    const buffer = await generateUniversityExcel(studentsWithApps);
 
     res.setHeader(
       'Content-Type',
@@ -292,14 +292,13 @@ app.get('/api/teacher/export-excel', async (req, res) => {
     );
     res.setHeader(
       'Content-Disposition',
-      `attachment; filename=highschool_university_applications_${encodeURIComponent(new Date().toISOString().slice(0, 10))}.xlsx`
+      `attachment; filename="susi_applications_${new Date().toISOString().slice(0, 10)}.xlsx"`
     );
 
-    await workbook.xlsx.write(res);
-    res.end();
+    res.send(Buffer.from(buffer));
   } catch (err) {
     console.error('Excel export error:', err);
-    res.status(500).json({ error: '엑셀 생성에 실패했습니다.' });
+    res.status(500).json({ error: '엑셀 생성에 실패했습니다: ' + err.message });
   }
 });
 
