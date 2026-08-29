@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: unicard-tracker
+    env: node
+    plan: free
+    buildCommand: npm install && cd client && npm install && npm run build
+    startCommand: node server/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+    disk:
+      name: unicard-data
+      mountPath: /app/server
+      sizeGB: 1

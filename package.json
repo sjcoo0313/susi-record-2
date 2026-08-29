@@ -1,0 +1,31 @@
+{
+  "name": "unicard-tracker",
+  "version": "1.0.0",
+  "description": "고3 수시 6장 대학 지원 관리 웹 애플리케이션",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "server": "node server/index.js",
+    "client": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "dev": "node server/index.js"
+  },
+  "keywords": [
+    "university-application",
+    "high-school",
+    "teacher-tool"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@netlify/blobs": "^11.0.2",
+    "better-sqlite3": "^13.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "exceljs": "^4.4.0",
+    "express": "^4.21.2",
+    "localtunnel": "^2.0.2",
+    "qrcode": "^1.5.4",
+    "serverless-http": "^4.0.0"
+  }
+}
