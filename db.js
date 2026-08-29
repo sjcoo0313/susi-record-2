@@ -40,6 +40,7 @@ try {
         tendency TEXT DEFAULT '',
         status TEXT DEFAULT '입시결과',
         reserve_number TEXT DEFAULT '',
+        fail_reason TEXT DEFAULT '',
         is_submitted INTEGER DEFAULT 0,
         has_min_gpa INTEGER DEFAULT 0,
         min_gpa_subjects TEXT DEFAULT '',
@@ -68,6 +69,7 @@ try {
       'ALTER TABLE applications ADD COLUMN interview_end_date TEXT DEFAULT ""',
       'ALTER TABLE applications ADD COLUMN interview_detail TEXT DEFAULT ""',
       'ALTER TABLE applications ADD COLUMN reserve_number TEXT DEFAULT ""',
+      'ALTER TABLE applications ADD COLUMN fail_reason TEXT DEFAULT ""',
       "UPDATE applications SET status = '입시결과' WHERE status = '접수완료'"
     ];
 
@@ -145,7 +147,7 @@ const getStudentWithApps = (studentId) => {
     if (!student) return null;
 
     const apps = db.prepare(`
-      SELECT rank, university, major, admission_type, admission_detail, gpa, tendency, status, reserve_number, is_submitted,
+      SELECT rank, university, major, admission_type, admission_detail, gpa, tendency, status, reserve_number, fail_reason, is_submitted,
              has_min_gpa, min_gpa_subjects, min_gpa_grade, min_gpa_inquiry,
              has_interview, interview_start_date, interview_end_date, interview_detail,
              note
@@ -167,6 +169,7 @@ const getStudentWithApps = (studentId) => {
         tendency: '',
         status: '입시결과',
         reserve_number: '',
+        fail_reason: '',
         is_submitted: 0,
         has_min_gpa: 0,
         min_gpa_subjects: '',
@@ -206,12 +209,12 @@ const saveStudentWithApps = (studentId, name, pin, apps) => {
 
       const upsertApp = db.prepare(`
         INSERT INTO applications (
-          student_id, rank, university, major, admission_type, admission_detail, gpa, tendency, status, reserve_number, is_submitted,
+          student_id, rank, university, major, admission_type, admission_detail, gpa, tendency, status, reserve_number, fail_reason, is_submitted,
           has_min_gpa, min_gpa_subjects, min_gpa_grade, min_gpa_inquiry,
           has_interview, interview_start_date, interview_end_date, interview_detail,
           note, updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         ON CONFLICT(student_id, rank) DO UPDATE SET
           university = excluded.university,
           major = excluded.major,
@@ -221,6 +224,7 @@ const saveStudentWithApps = (studentId, name, pin, apps) => {
           tendency = excluded.tendency,
           status = excluded.status,
           reserve_number = excluded.reserve_number,
+          fail_reason = excluded.fail_reason,
           is_submitted = excluded.is_submitted,
           has_min_gpa = excluded.has_min_gpa,
           min_gpa_subjects = excluded.min_gpa_subjects,
@@ -247,6 +251,7 @@ const saveStudentWithApps = (studentId, name, pin, apps) => {
           card.tendency ? card.tendency.trim() : '',
           card.status ? card.status.trim() : '입시결과',
           card.reserve_number !== undefined && card.reserve_number !== null ? String(card.reserve_number).trim() : '',
+          card.fail_reason !== undefined && card.fail_reason !== null ? String(card.fail_reason).trim() : '',
           card.is_submitted ? 1 : 0,
           card.has_min_gpa ? 1 : 0,
           card.min_gpa_subjects ? card.min_gpa_subjects.trim() : '',
@@ -298,6 +303,7 @@ const saveStudentWithApps = (studentId, name, pin, apps) => {
         tendency: card.tendency ? card.tendency.trim() : '',
         status: card.status ? card.status.trim() : '입시결과',
         reserve_number: card.reserve_number !== undefined && card.reserve_number !== null ? String(card.reserve_number).trim() : '',
+        fail_reason: card.fail_reason !== undefined && card.fail_reason !== null ? String(card.fail_reason).trim() : '',
         is_submitted: card.is_submitted ? 1 : 0,
         has_min_gpa: card.has_min_gpa ? 1 : 0,
         min_gpa_subjects: card.min_gpa_subjects ? card.min_gpa_subjects.trim() : '',
@@ -321,7 +327,7 @@ const getAllStudentsWithApps = () => {
   if (db) {
     const students = db.prepare('SELECT student_id, name, pin, updated_at FROM students ORDER BY student_id ASC').all();
     const allApps = db.prepare(`
-      SELECT student_id, rank, university, major, admission_type, admission_detail, gpa, tendency, status, reserve_number, is_submitted,
+      SELECT student_id, rank, university, major, admission_type, admission_detail, gpa, tendency, status, reserve_number, fail_reason, is_submitted,
              has_min_gpa, min_gpa_subjects, min_gpa_grade, min_gpa_inquiry,
              has_interview, interview_start_date, interview_end_date, interview_detail,
              note

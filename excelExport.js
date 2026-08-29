@@ -103,6 +103,8 @@ async function generateUniversityExcel(studentsWithApps) {
       let statusText = card.status || '';
       if (card.status === '예비번호' && card.reserve_number) {
         statusText = `예비 ${card.reserve_number}번`;
+      } else if (card.status === '불합격' && card.fail_reason) {
+        statusText = `불합격(${card.fail_reason})`;
       }
 
       rowValues.push(
@@ -209,6 +211,8 @@ async function generateUniversityExcel(studentsWithApps) {
       let statusText = app.status || '';
       if (app.status === '예비번호' && app.reserve_number) {
         statusText = `예비 ${app.reserve_number}번`;
+      } else if (app.status === '불합격' && app.fail_reason) {
+        statusText = `불합격(${app.fail_reason})`;
       }
 
       let minGpaDetail = '최저 없음';
