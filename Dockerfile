@@ -2,22 +2,15 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Install build tools for native modules
+# Install build tools for native SQLite compilation
 RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 
-# Copy package files
-COPY package*.json ./
-COPY client/package*.json ./client/
-
-# Install root & client dependencies
-RUN npm install
-RUN cd client && npm install
-
-# Copy all source files
+# Copy entire source repository
 COPY . .
 
-# Build frontend
-RUN cd client && npm run build
+# Install dependencies and build frontend
+RUN npm install
+RUN if [ -d "client" ]; then cd client && npm install && npm run build; fi
 
 ENV PORT=3000
 ENV NODE_ENV=production
